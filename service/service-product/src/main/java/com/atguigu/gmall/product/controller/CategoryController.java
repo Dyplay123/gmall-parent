@@ -27,8 +27,7 @@ public class CategoryController {
     BaseCategory2Service baseCategory2Service;
     @Autowired
     BaseCategory3Service baseCategory3Service;
-    @Autowired
-    BaseAttrInfoService baseAttrInfoService;
+
     //查询一级分类
     @GetMapping("/getCategory1")
     public Result getCategory1 (){
@@ -53,15 +52,7 @@ public class CategoryController {
         return Result.ok(category3List);
     }
 
-   //查询平台属性
-    @GetMapping("/attrInfoList/{category1Id}/{category2Id}/{category3Id}")
-    public Result attrInfoList (@PathVariable("category1Id") Long category1Id
-            ,@PathVariable("category2Id") Long category2Id
-            ,@PathVariable("category3Id") Long category3Id){
-        List<BaseAttrInfo>  baseAttrInfoList = baseAttrInfoService.getAttrInfoList(category1Id,category2Id,category3Id);
 
-     return Result.ok();
-    }
 
 
 
