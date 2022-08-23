@@ -14,4 +14,5 @@ public interface BaseAttrInfoService extends IService<BaseAttrInfo> {
 
     List<BaseAttrInfo> getAttrInfoList(Long category1Id, Long category2Id, Long category3Id);
 
+    void saveAttrInfo(BaseAttrInfo baseAttrInfo);
 }
