@@ -17,6 +17,7 @@ public class BaseTrademarkController {
     BaseTrademarkService baseTrademarkService;
 
 
+
     ///baseTrademark/{page}/{limit}
     //获取品牌分页列表
     @GetMapping("/baseTrademark/{page}/{limit}")
@@ -52,12 +53,20 @@ public class BaseTrademarkController {
 
     }
 
-    //5、根据Id获取品牌
+    //5、根据Id获取品牌ffd
     @GetMapping("/baseTrademark/get/{id}")
     public Result getBaseTrademark(@PathVariable("id") Long id){
         BaseTrademark trademark = baseTrademarkService.getById(id);
 
         return Result.ok(trademark);
 
+    }
+
+
+    //3、获取品牌属性
+    @GetMapping("baseTrademark/getTrademarkList")
+    public Result getTrademarkList(){
+        List<BaseTrademark> list = baseTrademarkService.list();
+        return Result.ok(list);
     }
 }

@@ -1,7 +1,10 @@
 package com.atguigu.gmall.product.service;
 
 import com.atguigu.gmall.model.product.SpuInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author dypiay
@@ -10,4 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface SpuInfoService extends IService<SpuInfo> {
 
+    Page<SpuInfo> getSpuInfoPage(Page<SpuInfo> page1, Long category3Id);
+
+    void saveSpuInfo(SpuInfo spuInfo);
 }
