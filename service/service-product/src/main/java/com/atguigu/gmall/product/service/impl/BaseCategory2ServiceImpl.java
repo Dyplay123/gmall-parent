@@ -1,6 +1,7 @@
 package com.atguigu.gmall.product.service.impl;
 
 import com.atguigu.gmall.model.product.BaseCategory2;
+import com.atguigu.gmall.model.to.CategoryTreeTo;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -32,6 +33,12 @@ public class BaseCategory2ServiceImpl extends ServiceImpl<BaseCategory2Mapper, B
         lambdaQuery.eq(BaseCategory2::getCategory1Id,category1Id);
         List<BaseCategory2> category2List = baseCategory2Mapper.selectList(lambdaQuery);
         return category2List;
+    }
+
+    @Override
+    public List<CategoryTreeTo> getAllCategoryWithTree() {
+
+     return    baseCategory2Mapper.getAllCategoryWithTree();
     }
 }
 

@@ -2,6 +2,7 @@ package com.atguigu.gmall.product.service.impl;
 
 import com.atguigu.gmall.model.product.SkuImage;
 import com.atguigu.gmall.product.mapper.SpuImageMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.atguigu.gmall.product.service.SkuImageService;
 import com.atguigu.gmall.product.mapper.SkuImageMapper;
@@ -18,8 +19,16 @@ import java.util.List;
 @Service
 public class SkuImageServiceImpl extends ServiceImpl<SkuImageMapper, SkuImage>
     implements SkuImageService{
+@Resource
+SkuImageMapper skuImageMapper;
 
+    @Override
+    public List<SkuImage> getSkuImage(Long skuId) {
+        List<SkuImage> skuImages = skuImageMapper.selectList(new LambdaQueryWrapper<SkuImage>()
+                .eq(SkuImage::getSkuId, skuId));
+        return skuImages;
 
+    }
 }
 
 
