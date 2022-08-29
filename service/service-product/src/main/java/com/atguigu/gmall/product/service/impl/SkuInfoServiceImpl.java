@@ -8,7 +8,6 @@ import com.atguigu.gmall.product.mapper.BaseCategory3Mapper;
 import com.atguigu.gmall.product.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.atguigu.gmall.product.mapper.SkuInfoMapper;
-import com.sun.xml.internal.bind.v2.TODO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
