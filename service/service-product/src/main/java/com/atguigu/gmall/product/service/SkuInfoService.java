@@ -28,4 +28,7 @@ public interface SkuInfoService extends IService<SkuInfo> {
     List<SkuImage> getDetailSkuImages(Long skuId);
 
     BigDecimal get1010Price(Long skuId);
+
+    List<Long> findAllSkuId();
+
 }

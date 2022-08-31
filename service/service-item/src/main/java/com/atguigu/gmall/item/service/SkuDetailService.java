@@ -7,5 +7,4 @@ public interface SkuDetailService {
 
 
     SkuDetailTo getSkuDetail(Long skuId);
-
 }

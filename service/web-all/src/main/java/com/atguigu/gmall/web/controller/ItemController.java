@@ -19,13 +19,20 @@ public class ItemController {
     @GetMapping("/{skuId}.html")
         public String item(@PathVariable("skuId") Long skuId, Model model){
         Result<SkuDetailTo> skuDetail = skuDetailFeifnClient.getSkuDetail(skuId);
-        SkuDetailTo skuDetailTo = skuDetail.getData();
+        if (skuDetail.isOk()){
+            SkuDetailTo skuDetailTo = skuDetail.getData();
+            if (skuDetailTo == null || skuDetailTo.getSkuInfo() == null){
+                return "item/404";
+            }
 
-        model.addAttribute("categoryView",skuDetailTo.getCategoryView());
-        model.addAttribute("skuInfo",skuDetailTo.getSkuInfo());
-        model.addAttribute("price",skuDetailTo.getPrice());
-        model.addAttribute("spuSaleAttrList",skuDetailTo.getSpuSaleAttrList());//spu的销售属性列表
-        model.addAttribute("valuesSkuJson",skuDetailTo.getValuesSkuJson());//json
+            model.addAttribute("categoryView",skuDetailTo.getCategoryView());
+            model.addAttribute("skuInfo",skuDetailTo.getSkuInfo());
+            model.addAttribute("price",skuDetailTo.getPrice());
+            model.addAttribute("spuSaleAttrList",skuDetailTo.getSpuSaleAttrList());//spu的销售属性列表
+            model.addAttribute("valuesSkuJson",skuDetailTo.getValuesSkuJson());//json
+
+        }
         return "item/index";
         }
+
 }
