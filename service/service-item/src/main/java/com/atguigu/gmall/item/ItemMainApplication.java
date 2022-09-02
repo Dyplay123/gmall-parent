@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 
 
 
-@Import(RedissonAutoConfiguration.class)
+
 @EnableThreadPool
 @EnableFeignClients
 @SpringCloudApplication

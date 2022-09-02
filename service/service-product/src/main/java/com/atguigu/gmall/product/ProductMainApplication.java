@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @EnableThreadPool
-@Import({Swagger2Config.class, RedissonAutoConfiguration.class})
+@Import({Swagger2Config.class})
 @MapperScan("com.atguigu.gmall.product.mapper") //自动扫描这个包下的所有Mapper接口
 @SpringCloudApplication
 public class ProductMainApplication {
