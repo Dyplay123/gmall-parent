@@ -7,4 +7,6 @@ public interface SkuDetailService {
 
 
     SkuDetailTo getSkuDetail(Long skuId);
+
+    void updateHotScore(Long skuId);
 }

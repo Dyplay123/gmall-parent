@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -75,6 +76,15 @@ public class GoodsServiceImpl implements GoodsService {
 
     }
 
+    @Override
+    public void updateHotScore(Long skuId, Long score) {
+        //根据skuId得到es里面的商品
+        Goods goods = goodsRepository.findById(skuId).get();
+        //更新商品的热度分
+        goods.setHotScore(score);
+        //同步到es
+        goodsRepository.save(goods);
+    }
 
 
     private SearchResponseVo buildSearchResponseResult(SearchHits<Goods> goods,

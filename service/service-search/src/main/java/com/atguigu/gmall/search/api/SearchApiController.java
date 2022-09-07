@@ -1,6 +1,7 @@
 package com.atguigu.gmall.search.api;
 
 import com.atguigu.gmall.common.result.Result;
+import com.atguigu.gmall.feign.search.SearchFeignClient;
 import com.atguigu.gmall.model.list.Goods;
 import com.atguigu.gmall.model.vo.search.SearchParamVo;
 import com.atguigu.gmall.model.vo.search.SearchResponseVo;
@@ -16,6 +17,7 @@ public class SearchApiController {
 
     @Resource
     GoodsService goodsService;
+
 
     //保存商品信息到es
     @PostMapping("/goods")
@@ -35,5 +37,13 @@ public class SearchApiController {
     public Result<SearchResponseVo> search(@RequestBody SearchParamVo paramVo){
         SearchResponseVo responseVo = goodsService.search(paramVo);
         return Result.ok(responseVo);
+    }
+
+
+    @GetMapping("/goods/hotscore/{skuId}")
+    Result updateHotScore(@PathVariable("skuId") Long skuId,
+                          @RequestParam("score") Long score){
+        goodsService.updateHotScore(skuId,score);
+        return Result.ok();
     }
 }
