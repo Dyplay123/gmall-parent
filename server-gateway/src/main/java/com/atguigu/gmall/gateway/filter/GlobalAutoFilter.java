@@ -63,43 +63,40 @@ public class GlobalAutoFilter implements GlobalFilter {
             }
         }
 
-        //需要登录的请求，我们进行权限验证
+        //4、需要登录的请求； 进行权限验证
         for (String url : urlProperties.getLoginAuthUrl()) {
             boolean match = matcher.match(url, path);
-            if (match){
-                //说明路径正确，获取token信息
+            if(match){
+                //登录等校验
+                //3.1、 获取 token 信息【Cookie[token=xxx]】【Header[token=xxx]】
                 String tokenValue = getTokenValue(exchange);
-                // 校验 token
+                //3.2、 校验 token
                 UserInfo info = getTokenUserInfo(tokenValue);
                 //3.3、 判断用户信息是否正确
                 if(info != null){
                     //Redis中有此用户。exchange里面的request的头会新增一个userid
-                    ServerWebExchange webExchange = userIdTransport(info, exchange);
+                    ServerWebExchange webExchange = userIdOrTempIdTransport(info, exchange);
                     return chain.filter(webExchange);
                 }else {
                     //redis中无此用户【假令牌、token没有，没登录】
                     //重定向到登录页
-
                     return redirectToCustomPage(urlProperties.getLoginPage()+"?originUrl="+uri,exchange);
                 }
-            }
-        }
-        /*
-        * 走到这里，不是静态资源能够直接放行，也不是必须登录才能访问，是其他普通请求，类似于购物车，不用登录也能够访问
-        * 这种普通请求只要是带了token就说明可能登陆了，那么久透传用户id
-        * */
-        String tokenValue = getTokenValue(exchange);
-        UserInfo userInfo = getTokenUserInfo(tokenValue);
-        if (userInfo!=null){
-            exchange= userIdTransport(userInfo, exchange);
-        }else{
-            //但是前段带了token，还是没有解析出用户消息，说明是假令牌，
-            if(!StringUtils.isEmpty(tokenValue)){
-                //所以需要重定向到登录页面，重新登录，用来获得token，游览器所携带的token必须正确
-                return  redirectToCustomPage(urlProperties.getLoginPage()+"?originUrl="+uri,exchange);
 
             }
         }
+
+        //能走到这儿，既不是静态资源直接放行，也不是必须登录才能访问的，就一普通请求
+        //普通请求只要带了 token，说明可能登录了。只要登录了，就透传用户id。
+        String tokenValue = getTokenValue(exchange);
+        UserInfo info = getTokenUserInfo(tokenValue);
+        if(!StringUtils.isEmpty(tokenValue) && info == null){
+            //假请求直接打回登录
+            return redirectToCustomPage(urlProperties.getLoginPage()+"?originUrl="+uri,exchange);
+        }
+
+        //普通请求，透传用户id或者临时id
+        exchange = userIdOrTempIdTransport(info, exchange);
 
         return chain.filter(exchange);
     }
@@ -126,29 +123,42 @@ public class GlobalAutoFilter implements GlobalFilter {
         return response.setComplete();
 
     }
+    //1、用户id透传
+    //2、再看看前端有没有带临时id，如果带了顺便透传一下
+    private ServerWebExchange userIdOrTempIdTransport(UserInfo info, ServerWebExchange exchange) {
+        ServerHttpRequest.Builder newReqbuilder = exchange.getRequest().mutate();
 
-    private ServerWebExchange userIdTransport(UserInfo info, ServerWebExchange exchange) {
+        //用户登录了
         if(info != null){
-            //请求一旦发来，所有的请求数据是固定的，不能进行任何修改，只能读取
-            ServerHttpRequest request = exchange.getRequest();
-
-            //根据原来的请求，封装一个新情求
-            ServerHttpRequest newReq = exchange.getRequest()
-                    .mutate() //变一个新的
-                    .header(SysRedisConst.USERID_HEADER, info.getId().toString())
-                    .build();//添加自己的头
-
-
-            //放行的时候传改掉的exchange
-            ServerWebExchange webExchange = exchange
-                    .mutate()
-                    .request(newReq)
-                    .response(exchange.getResponse())
-                    .build();
-//            request.getHeaders().add();
-            return webExchange;
+            newReqbuilder.header(SysRedisConst.USERID_HEADER,info.getId().toString());
         }
-        return exchange;
+        //用户没登录
+        String userTempId = getUserTempId(exchange);
+        newReqbuilder.header(SysRedisConst.USERTEMPID_HEADER,userTempId);
+
+        //放行的时候传改掉的exchange
+        ServerWebExchange webExchange = exchange
+                .mutate()
+                .request(newReqbuilder.build())
+                .response(exchange.getResponse())
+                .build();
+        return webExchange;
+
+    }
+
+    private String getUserTempId(ServerWebExchange exchange) {
+        ServerHttpRequest request = exchange.getRequest();
+        //1、尝试获取头中的临时id
+        String tempId = request.getHeaders().getFirst("userTempId");
+        //2、如果头中没有，尝试获取cookie中的值
+        if(StringUtils.isEmpty(tempId)){
+            HttpCookie httpCookie = request.getCookies().getFirst("userTempId");
+            if(httpCookie!=null){
+                tempId = httpCookie.getValue();
+            }
+        }
+
+        return tempId;
     }
 
     /*

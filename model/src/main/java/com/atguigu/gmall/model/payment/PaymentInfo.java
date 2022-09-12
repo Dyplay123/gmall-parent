@@ -37,6 +37,9 @@ public class PaymentInfo extends BaseEntity {
 	@TableField("payment_type")
 	private String paymentType;
 
+	@TableField("user_id")
+	private Long userId;
+
 	@ApiModelProperty(value = "交易编号")
 	@TableField("trade_no")
 	private String tradeNo;
